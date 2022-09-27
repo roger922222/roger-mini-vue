@@ -1,7 +1,10 @@
+import { extend } from "../shared"
+
 class ReactiveEffect {
   private _fn: any
   deps = []
   active = true
+  onStop?: () => void
   public scheduler: Function | undefined
   constructor(fn, scheduler?: Function) {
     this._fn = fn
@@ -14,6 +17,9 @@ class ReactiveEffect {
   stop() {
     if (this.active) {
       cleanupEffect(this)
+      if (this.onStop) {
+        this.onStop()
+      }
       this.active = false
     }
   }
@@ -66,6 +72,12 @@ let activeEffect
 export function effect (fn, options: any = {}) {
   // fn 刚开始要调用一次
   const _effect = new ReactiveEffect(fn, options.scheduler)
+  // _effect.onStop = options.onStop
+  // options --> 很多key
+  // Object.assign(_effect, options)
+  // extend 更具有语义化
+  extend(_effect, options)
+
   _effect.run()
 
   const runner: any = _effect.run.bind(_effect)
