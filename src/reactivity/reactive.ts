@@ -1,32 +1,66 @@
-import { track, trigger } from "./effect"
+import { mutableHandlers, readonlyHandlers } from "./baseHandlers"
+// import { track, trigger } from "./effect"
 
-export function reactive (raw) {
-  return new Proxy(raw, {
-    get(target, key) {
-      // target { foo: 1 }
-      // key foo
-      const res = Reflect.get(target, key)
-      // TODO 依赖收集
-      track(target, key)
-      return res 
-    },
-    set(target, key, value) {
-      const res = Reflect.set(target, key, value)
-      // TODO 触发依赖 
-      trigger(target, key)
-      return res
-    }
-  })
+// 利用高阶函数判断是否是readonly
+// function createGetter(isReadonly = false) {
+//   return function get(target, key) {
+//     const res = Reflect.get(target, key)
+//     if (!isReadonly) {
+//       track(target, key)
+//     }
+//     return res
+//   }
+// }
+
+// function createSetter() {
+//   return function set(target, key, value) {
+//     const res = Reflect.set(target, key, value)
+//     // TODO 触发依赖 
+//     trigger(target, key)
+//     return res
+//   }
+// }
+
+// function get(target, key) {
+//   // target { foo: 1 }
+//   // key foo
+//   const res = Reflect.get(target, key)
+//   // TODO 依赖收集
+//   track(target, key)
+//   return res
+// }
+
+// function set(target, key, value) {
+//   const res = Reflect.set(target, key, value)
+//   // TODO 触发依赖 
+//   trigger(target, key)
+//   return res
+// }
+
+// export function reactive (raw) {
+//   return new Proxy(raw, {
+//     get: createGetter(),
+//     set: createSetter()
+//   })
+// }
+
+// export function readonly(raw) {
+//   return new Proxy(raw, {
+//     get: createGetter(true),
+//     set(target, key, value) {
+//       return true
+//     }
+//   })
+// }
+
+function createActiveObject(raw, baseHandlers) {
+  return new Proxy(raw, baseHandlers)
+}
+
+export function reactive(raw) {
+  return createActiveObject(raw, mutableHandlers)
 }
 
 export function readonly(raw) {
-  return new Proxy(raw, {
-    get(target, key) {
-      const res = Reflect.get(target, key)
-      return res
-    },
-    set(target, key, value) {
-      return true
-    }
-  })
+  return createActiveObject(raw, readonlyHandlers)
 }

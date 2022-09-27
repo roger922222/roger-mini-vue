@@ -1,0 +1,41 @@
+import { track, trigger } from "./effect"
+
+// 缓存机制的优化，没有必要每次都调用createGetter,createSetter
+const get = createGetter()
+const set = createSetter()
+const readonlyGet = createGetter(true)
+
+// 利用高阶函数判断是否是readonly
+function createGetter(isReadonly = false) {
+  return function get(target, key) {
+    const res = Reflect.get(target, key)
+    if (!isReadonly) {
+      track(target, key)
+    }
+    return res
+  }
+}
+
+function createSetter() {
+  return function set(target, key, value) {
+    const res = Reflect.set(target, key, value)
+    // TODO 触发依赖 
+    trigger(target, key)
+    return res
+  }
+}
+
+export const mutableHandlers = {
+  // get: createGetter(),
+  // set: createSetter()
+  get,
+  set
+}
+
+export const readonlyHandlers = {
+  // get: createGetter(),
+  get: readonlyGet,
+  set(target, key, value) {
+    return true
+  }
+}
