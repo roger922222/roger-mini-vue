@@ -69,7 +69,9 @@ describe('effect', () => {
     expect(dummy).toBe(2)
     // 当发生stop后，发生set，不希望更新数据，此时就希望把所有的依赖都删除掉
     stop(runner)
-    obj.prop = 3
+    // obj.prop = 3
+    // obj.prop++ obj.prop = obj.prop + 1  涉及到get,set stop只是阻止set,并不能阻止get,  这样会收集依赖，stop清理依赖失败
+    obj.prop++
     expect(dummy).toBe(2)
 
     // stopped effect should still be manually callable
