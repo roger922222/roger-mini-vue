@@ -65,7 +65,7 @@ export function track(target, key) {
     depsMap = new Map()
     targetMap.set(target, depsMap)
   }
-
+ 
   let dep = depsMap.get(key)
 
   if (!dep) {
