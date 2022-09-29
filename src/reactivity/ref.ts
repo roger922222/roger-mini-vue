@@ -1,10 +1,17 @@
 import { hasChanged, isObject } from '../shared'
 import { isTracking, trackEffects, triggerEffects } from './effect'
 import { reactive } from './reactive'
+
+
+// 1 true '1' 等
+// 怎么样知道get set 
+// proxy ---> object  这个值针对的对象
+// {} ---》 通过对象来进行包裹，这个对象就是ref类   这个类里面有value值，就可以有get set   这就是ref为什么有.value的程序设计
 class RefImpl {
   private _value: any
   public dep
   private _rawValue: any
+  public __v_isRef = true
   constructor(value) {
     this._rawValue = value
     this._value = convert(value)
@@ -44,4 +51,13 @@ function trackRefValue (ref) {
 
 export function ref(value) {
   return new RefImpl(value)
+}
+
+export function isRef(ref) {
+  return !!ref.__v_isRef
+}
+
+export function unRef(ref) {
+  // 先判断是不是ref对象，是 返回 ref.value  否则返回 ref
+  return isRef(ref) ? ref.value : ref
 }
