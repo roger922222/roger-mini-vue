@@ -1,4 +1,4 @@
-import { isReadonly, readonly } from "../reactive"
+import { isProxy, isReadonly, readonly } from "../reactive"
 
 describe('readonly', () => {
 
@@ -25,6 +25,7 @@ describe('readonly', () => {
     expect(isReadonly(observed.nested)).toBe(true)
     expect(isReadonly(observed.array)).toBe(true)
     expect(isReadonly(observed.array[0])).toBe(true)
+    expect(isProxy(observed)).toBe(true)
   })
 
   it('warn then call set', () => {
