@@ -14,6 +14,19 @@ describe('readonly', () => {
     expect(isReadonly(original)).toBe(false)
   })
 
+  test('nested reactive', () => {
+    const original = {
+      nested: {
+        foo: 1
+      },
+      array: [{ bar: 2 }]
+    }
+    const observed = readonly(original)
+    expect(isReadonly(observed.nested)).toBe(true)
+    expect(isReadonly(observed.array)).toBe(true)
+    expect(isReadonly(observed.array[0])).toBe(true)
+  })
+
   it('warn then call set', () => {
     // console.warn
 
