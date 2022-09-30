@@ -42,6 +42,5 @@ function handleSetupResult(instance, setupResult) {
 function finishComponentSetup(instance) {
   const Component = instance.type
 
-
-  instance.render = instance.render || Component.render
+  instance.render = Component.render
 }
