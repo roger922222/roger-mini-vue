@@ -24,7 +24,7 @@ function processElement(vnode, container) {
 }
 
 function mountElement(vnode, container) {
-  const el = document.createElement(vnode.type)
+  const el = (vnode.el =  document.createElement(vnode.type))
 
   // children ----> 类型 ----> string | array
   const { children, props } = vnode
@@ -56,18 +56,22 @@ function processComponent(vnode, container) {
   mountComponent(vnode, container)
 }
 
-function mountComponent(vnode, container) {
-  const instance = createComponentInstance(vnode)
+function mountComponent(initialVNode, container) {
+  const instance = createComponentInstance(initialVNode)
 
   setupComponent(instance)
-  setupRenderEffect(instance, container)
+  setupRenderEffect(instance, initialVNode, container)
 }
 
-function setupRenderEffect(instance, container) {
-  const subTree = instance.render()
+function setupRenderEffect(instance, initialVNode, container) {
+  const { proxy } = instance
+  const subTree = instance.render.call(proxy)
 
   // vnode 树  ---> patch
   // vnode ---> element ---> mountElement
   patch(subTree, container)
+
+  // element --> mount 知道啥时候完成初始化并且可以获取到el
+  initialVNode.el = subTree.el
 }
 
