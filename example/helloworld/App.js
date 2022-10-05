@@ -8,7 +8,13 @@ export const App = {
     // ui
     return h('div', { 
       id: 'root',
-      class: ['red', 'hard']
+      class: ['red', 'hard'],
+      onClick() {
+        console.log('click 注册点击事件')
+      },
+      onMousedown() {
+        console.log('mouse-down')
+      }
     },
     // setupState
     // this.$el ---> get root element 即这个组件的根节点
