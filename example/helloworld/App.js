@@ -1,7 +1,9 @@
 import { h } from '../../lib/roger-mini-vue.esm.js'
+import { Foo } from './Foo.js'
 
 window.self = null
 export const App = {
+  name: 'App',
   // 先使用render函数处理
   render() {
     window.self = this // 测试this使用，在浏览器的控制台
@@ -16,9 +18,10 @@ export const App = {
         console.log('mouse-down')
       }
     },
+    [h('div', {}, 'hi,' + this.msg), h(Foo, { count: 1, a: { b: 1 } })]
     // setupState
     // this.$el ---> get root element 即这个组件的根节点
-    'hi,' + this.msg
+    // 'hi,' + this.msg
     // string 
     // 'hi, mini-vue'
     // array
