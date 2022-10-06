@@ -38,10 +38,16 @@ function setupStatefulComponent(instance) {
   const { setup } = Component
 
   if (setup) {
+    // 每个组件对应的自己的实例对象 调用setup的时候赋值
+    // currentInstance = instance  优化为函数的赋值方式
+    setCurrentInstance(instance)
     // return function | object    如果返回的是function就可以认为是组件的render函数，如果返回的object,把对象注入到组件的上下文中
     const setupResult = setup(shallowReadonly(instance.props), {
       emit: instance.emit
     })
+
+    // currentInstance = null
+    setCurrentInstance(null)
 
     handleSetupResult(instance, setupResult)
   }
@@ -61,4 +67,16 @@ function finishComponentSetup(instance) {
   const Component = instance.type
 
   instance.render = Component.render
+}
+
+let currentInstance = null
+
+// 此方法vue3文档不在公开，自己学习一下
+export function getCurrentInstance() {
+  return currentInstance
+}
+
+export function setCurrentInstance(instance) {
+  // 好处：全局跟踪的时候，在这里打断点即可
+  currentInstance = instance
 }
