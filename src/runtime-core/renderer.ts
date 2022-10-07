@@ -7,7 +7,8 @@ import { Fragment, Text } from "./vnode"
 
 
 export function createRenderer(options) {
-  const { createElement, patchProp, insert } = options
+  // 重新命名，以便后续出问题好查找对应的问题
+  const { createElement: hostCreateElement, patchProp: hostPatchProp, insert: hostInsert } = options
 
   function render(vnode, container) {
 
@@ -62,7 +63,7 @@ export function createRenderer(options) {
   }
 
   function mountElement(vnode, container, parentComponent) {
-    const el = (vnode.el =  createElement(vnode.type))
+    const el = (vnode.el = hostCreateElement(vnode.type))
 
     // children ----> 类型 ----> string | array
     const { children, props, shapeFlags } = vnode
@@ -88,11 +89,11 @@ export function createRenderer(options) {
       // } else {
       //   el.setAttribute(key, val)
       // }
-      patchProp(el, key, val)
+      hostPatchProp(el, key, val)
     }
 
     // container.append(el)
-    insert(el, container)
+    hostInsert(el, container)
 
   }
 
