@@ -9,7 +9,13 @@ import { Fragment, Text } from "./vnode"
 
 export function createRenderer(options) {
   // 重新命名，以便后续出问题好查找对应的问题
-  const { createElement: hostCreateElement, patchProp: hostPatchProp, insert: hostInsert } = options
+  const { 
+    createElement: hostCreateElement, 
+    patchProp: hostPatchProp, 
+    insert: hostInsert, 
+    remove: hostRemove,
+    setElementText: hostSetElementText
+  } = options
 
   function render(n2, container) {
 
@@ -58,18 +64,18 @@ export function createRenderer(options) {
   }
 
   function processFragment(n1, n2, container, parentComponent) {
-    mountChildren(n1, n2, container, parentComponent)
+    mountChildren(n2.children, container, parentComponent)
   }
 
   function processElement(n1, n2, container, parentComponent) {
     if (!n1) {
       mountElement(n1, n2, container, parentComponent)
     } else {
-      patchElement(n1, n2, container)
+      patchElement(n1, n2, container, parentComponent)
     }
   }
 
-  function patchElement(n1, n2, container) {
+  function patchElement(n1, n2, container, parentComponent) {
     console.log('patchElement')
     console.log('n1', n1)
     console.log('n2', n2)
@@ -83,6 +89,38 @@ export function createRenderer(options) {
 
     patchProps(el, oldProps, newProps)
 
+    patchChildren(n1, n2, el, parentComponent)
+
+  }
+
+  function patchChildren(n1, n2, container, parentComponent) {
+    const prevShapeFlag = n1.shapeFlags
+    const c1 = n1.children
+    const nextShapeFlag = n2.shapeFlags
+    const c2 = n2.children
+
+    // 1. 老的数组，新的text
+    if (nextShapeFlag & ShapeFlags.TEXT_CHILDREN) {
+      if (prevShapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+        // 1. 把老的children清空
+        unmountChildren(c1)
+      }
+      if (c1 !== c2) {
+        hostSetElementText(container, c2)
+      }
+    } else {
+      if (prevShapeFlag & ShapeFlags.TEXT_CHILDREN) {
+        hostSetElementText(container, '')
+        mountChildren(c2, container, parentComponent)
+      }
+    }
+  }
+
+  function unmountChildren(children) {
+    for (let i = 0; i < children.length; i++) {
+      const el = children[i].el
+      hostRemove(el)
+    }
   }
 
   function patchProps(el, oldProps, newProps) {
@@ -117,7 +155,7 @@ export function createRenderer(options) {
       el.textContent = children
     } else if (shapeFlags & ShapeFlags.ARRAY_CHILDREN) {
       // array_children
-      mountChildren(n1, n2, el, parentComponent)
+      mountChildren(n2.children, el, parentComponent)
     }
 
     // props
@@ -141,9 +179,9 @@ export function createRenderer(options) {
 
   }
 
-  function mountChildren(n1, n2, container, parentComponent) {
+  function mountChildren(children, container, parentComponent) {
     // 每一个子元素都是虚拟节点 n1, n2
-    n2.children.forEach((v) => {
+    children.forEach((v) => {
       patch(null, v, container, parentComponent)
     })
   }
