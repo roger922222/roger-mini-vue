@@ -3,6 +3,7 @@ import { h } from '../../lib/roger-mini-vue.esm.js'
 import ArrayToText from './ArrayToText.js'
 import TextToText from './TextToText.js'
 import TextToArray from './TextToArray.js'
+import ArrayToArray from './ArrayToArray.js'
 
 export const App = {
   name: 'App',
@@ -17,7 +18,9 @@ export const App = {
       //2. 老的text 新的text
       // h(TextToText)
       //3. 老的是text 新的是数组array
-      h(TextToArray)
+      // h(TextToArray)
+      //4. 老的array 新的array
+      h(ArrayToArray)
     ]) 
   }
 }
