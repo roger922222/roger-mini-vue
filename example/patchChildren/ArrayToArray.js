@@ -40,17 +40,17 @@ import { h, ref } from '../../lib/roger-mini-vue.esm.js'
 // (a b)
 // (a b) c
 // i = 2, el = 1, e2 = 2
-const prevChildren = [
-  h('p', { key: 'A' }, 'A'),
-  h('p', { key: 'B' }, 'B'),
-]
+// const prevChildren = [
+//   h('p', { key: 'A' }, 'A'),
+//   h('p', { key: 'B' }, 'B'),
+// ]
 
-const nextChildren = [
-  h('p', { key: 'A' }, 'A'),
-  h('p', { key: 'B' }, 'B'),
-  h('p', { key: 'C' }, 'C'),
-  h('p', { key: 'D' }, 'D'),
-]
+// const nextChildren = [
+//   h('p', { key: 'A' }, 'A'),
+//   h('p', { key: 'B' }, 'B'),
+//   h('p', { key: 'C' }, 'C'),
+//   h('p', { key: 'D' }, 'D'),
+// ]
 
 // 右侧
 // (a b)
@@ -153,6 +153,80 @@ const nextChildren = [
 //   h('p', { key: 'F' }, 'F'),
 //   h('p', { key: 'G' }, 'G'),
 // ]
+
+
+// 移动 节点存在于新的和老的里面 但是位置变了
+// a b (c d e) f g
+// a b (e c d) f g
+// 最长子序列 [1, 2]
+// const prevChildren = [
+//   h('p', { key: 'A' }, 'A'),
+//   h('p', { key: 'B' }, 'B'),
+//   h('p', { key: 'C' }, 'C'),
+//   h('p', { key: 'D' }, 'D'),
+//   h('p', { key: 'E' }, 'E'),
+//   h('p', { key: 'F' }, 'F'),
+//   h('p', { key: 'G' }, 'G'),
+// ]
+
+// const nextChildren = [
+//   h('p', { key: 'A' }, 'A'),
+//   h('p', { key: 'B' }, 'B'),
+//   h('p', { key: 'E' }, 'E'),
+//   h('p', { key: 'C' }, 'C'),
+//   h('p', { key: 'D' }, 'D'),
+//   h('p', { key: 'F' }, 'F'),
+//   h('p', { key: 'G' }, 'G'),
+// ]
+
+// 创建新的节点
+// a b (c e) f g
+// a b (e c d) f g
+// d 在老的里面不存在, 在新的里面存在
+// const prevChildren = [
+//   h('p', { key: 'A' }, 'A'),
+//   h('p', { key: 'B' }, 'B'),
+//   h('p', { key: 'C' }, 'C'),
+//   h('p', { key: 'E' }, 'E'),
+//   h('p', { key: 'F' }, 'F'),
+//   h('p', { key: 'G' }, 'G'),
+// ]
+
+// const nextChildren = [
+//   h('p', { key: 'A' }, 'A'),
+//   h('p', { key: 'B' }, 'B'),
+//   h('p', { key: 'E' }, 'E'),
+//   h('p', { key: 'C' }, 'C'),
+//   h('p', { key: 'D' }, 'D'),
+//   h('p', { key: 'F' }, 'F'),
+//   h('p', { key: 'G' }, 'G'),
+// ]
+
+// 综合例子
+// a b (c d e z) f g
+// a b (d c y e) f g
+
+const prevChildren = [
+  h('p', { key: 'A' }, 'A'),
+  h('p', { key: 'B' }, 'B'),
+  h('p', { key: 'C' }, 'C'),
+  h('p', { key: 'D' }, 'D'),
+  h('p', { key: 'E' }, 'E'),
+  h('p', { key: 'Z' }, 'Z'),
+  h('p', { key: 'F' }, 'F'),
+  h('p', { key: 'G' }, 'G'),
+]
+
+const nextChildren = [
+  h('p', { key: 'A' }, 'A'),
+  h('p', { key: 'B' }, 'B'),
+  h('p', { key: 'D' }, 'D'),
+  h('p', { key: 'C' }, 'C'),
+  h('p', { key: 'Y' }, 'Y'),
+  h('p', { key: 'E' }, 'E'),
+  h('p', { key: 'F' }, 'F'),
+  h('p', { key: 'G' }, 'G'),
+]
 
 
 export default {
