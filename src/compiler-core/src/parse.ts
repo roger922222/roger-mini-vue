@@ -57,7 +57,6 @@ function parseTag(context, type) {
   advanceBy(context, match[0].length)
   advanceBy(context, 1)
 
-
   if (type === TagType.END) return
 
   return {
