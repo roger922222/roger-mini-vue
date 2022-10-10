@@ -3,6 +3,7 @@ import { effect } from "../reactivity/effect"
 import { EMPTY_OBJ, isObject } from "../shared/index"
 import { ShapeFlags } from "../shared/ShapeFlags"
 import { createComponentInstance, setupComponent } from "./component"
+import { shouldUpdateComponent } from "./componentUpdateUtils"
 import { createAppAPI } from "./createApp"
 import { Fragment, Text } from "./vnode"
 
@@ -34,7 +35,6 @@ export function createRenderer(options) {
     // 增加一个Fragment  只渲染children
 
     const { shapeFlags, type } = n2
-
 
     switch(type) {
       case Fragment:
@@ -94,6 +94,7 @@ export function createRenderer(options) {
   }
 
   function patchChildren(n1, n2, container, parentComponent, anchor) {
+
     const prevShapeFlag = n1.shapeFlags
     const c1 = n1.children
     const nextShapeFlag = n2.shapeFlags
@@ -319,18 +320,33 @@ export function createRenderer(options) {
   }
 
   function processComponent(n1, n2, container, parentComponent, anchor) {
-    mountComponent(n2, container, parentComponent, anchor)
+    if (!n1) {
+      mountComponent(n2, container, parentComponent, anchor)
+    } else {
+      updateComponent(n1, n2)
+    }
+  }
+
+  function updateComponent(n1, n2) {
+    const instance = (n2.component = n1.component)
+    if (shouldUpdateComponent(n1, n2)) {
+      instance.next = n2
+      instance.update()
+    } else {
+      n2.el = n1.el
+      instance.vnode = n2
+    }
   }
 
   function mountComponent(initialVNode, container, parentComponent, anchor) {
-    const instance = createComponentInstance(initialVNode, parentComponent)
+    const instance = (initialVNode.component = createComponentInstance(initialVNode, parentComponent))
 
     setupComponent(instance)
     setupRenderEffect(instance, initialVNode, container, anchor)
   }
 
   function setupRenderEffect(instance, initialVNode, container, anchor) {
-    effect(() => {
+    instance.update = effect(() => {
       console.log('update')
       // 这里有一个初始化的操作和更新操作
       if (!instance.isMounted) {
@@ -348,7 +364,14 @@ export function createRenderer(options) {
         instance.isMounted = true
       } else {
         // update
-        const { proxy } = instance
+        const { proxy, next, vnode } = instance
+
+        // 需要一个vnode
+        if (next) {
+          next.el = vnode.el
+          updateComponentPreRender(instance, next)
+        }
+
         const subTree = instance.render.call(proxy)
         const prevSubTree = instance.subTree
         // 重新更新一下之前的subTree
@@ -362,6 +385,12 @@ export function createRenderer(options) {
   return {
     createApp: createAppAPI(render)
   }
+}
+
+function updateComponentPreRender(instance, nextVNode) {
+  instance.vnode = nextVNode
+  instance.next = null
+  instance.props = nextVNode.props
 }
 
 // 获取最长递增子序列的数组对应的下坐标
