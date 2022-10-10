@@ -26,11 +26,11 @@ function parseInterpolation(context) {
 
   const rawContentLength = closeIndex - openDelimiter.length
 
-  const rawContent = context.source.slice(0, rawContentLength)
+  const rawContent = parseTextData(context, rawContentLength)
   const content = rawContent.trim()
  
   // context.source = context.source.slice(rawContentLength + closeDelimiter.length)
-  advanceBy(context, rawContentLength + closeDelimiter.length)
+  advanceBy(context, closeDelimiter.length)
 
   return {
     type: NodeTypes.INTERPOLATION,
@@ -65,6 +65,25 @@ function parseTag(context, type) {
   }
 }
 
+function parseTextData(context, length) {
+  const content = context.source.slice(0, length)
+
+  advanceBy(context, length)
+
+  return content
+
+}
+
+function parseText(context) {
+  // 1. 获取当前的内容content
+  const content = parseTextData(context, context.source.length)
+
+  return {
+    type: NodeTypes.TEXT,
+    content
+  }
+}
+
 function parseChildren(context) {
   const nodes: any = [], s = context.source
   let node
@@ -75,6 +94,12 @@ function parseChildren(context) {
       node = parseElement(context)
     }
   }
+
+
+  if (!node) {
+    node = parseText(context)
+  }
+
   nodes.push(node)
   return nodes
 }
