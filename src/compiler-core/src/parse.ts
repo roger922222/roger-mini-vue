@@ -153,7 +153,8 @@ function isEnd(context, ancestors) {
 
 function createRoot(children) {
   return {
-    children
+    children,
+    type: NodeTypes.ROOT
   }
 }
 
