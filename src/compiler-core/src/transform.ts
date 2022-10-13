@@ -17,7 +17,14 @@ export function transform(root, options = {}) {
 }
 
 function createRootCodegen(root) {
-  root.codegenNode = root.children[0]
+
+  const child = root.children[0]
+
+  if (child.type === NodeTypes.ELEMENT) {
+    root.codegenNode = child.codegenNode
+  } else {
+    root.codegenNode = root.children[0]
+  }
 }
 
 function createTransformContext(root, options) {
@@ -38,11 +45,12 @@ function traverseNode(node, context) {
   // if (node.type === NodeTypes.TEXT) {
   //   node.content = node.content + ' mini-vue'
   // }
-
+  const exitFns: any = []
   const nodeTransforms = context.nodeTransforms
   for (let i = 0; i < nodeTransforms.length; i++) {
     const transform = nodeTransforms[i]
-    transform(node)
+    const onExit = transform(node, context)
+    if (onExit) exitFns.push(onExit)
   }
 
   switch(node.type) {
@@ -56,6 +64,12 @@ function traverseNode(node, context) {
     default:
       break
   }
+
+  let i = exitFns.length
+  while(i--) {
+    exitFns[i]()
+  }
+
 
 }
 

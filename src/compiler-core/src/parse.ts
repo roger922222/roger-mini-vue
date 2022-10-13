@@ -63,7 +63,6 @@ function startsWithEndTagOpen(source, tag) {
 function parseTag(context, type) {
   // 1. 解析出来div tag
   const match: any = /^<\/?([a-z]*)/i.exec(context.source)
-  console.log(match)
   const tag = match[1]
   // 2. 删除处理完成的代码
   advanceBy(context, match[0].length)
@@ -96,12 +95,8 @@ function parseText(context) {
     }
   }
 
-  console.log(endIndex, 'endIndex----')
-
   // 1. 获取当前的内容content
   const content = parseTextData(context, endIndex)
-
-  console.log(content, 'content------')
 
   return {
     type: NodeTypes.TEXT,
