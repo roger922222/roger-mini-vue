@@ -1,6 +1,6 @@
 import { isString } from "../../shared/index"
 import { NodeTypes } from "./ast"
-import { CREATE_ELEMENT_BLOCK, helperMapName, TO_DISPLAY_STRING } from "./runtimeHelpers"
+import { helperMapName, TO_DISPLAY_STRING, CREATE_ELEMENT_VNODE } from "./runtimeHelpers"
 
 export function generate(ast) {
 
@@ -82,7 +82,7 @@ function genExpression(node, context) {
 function genElement(node, context) {
   const { push, helper } = context
   const { tag, children, props } = node
-  push(`${helper(CREATE_ELEMENT_BLOCK)}(`)
+  push(`${helper(CREATE_ELEMENT_VNODE)}(`)
   if (!children) {
     push(`${tag}`)
   } else {
@@ -147,15 +147,15 @@ function createCodegenContext() {
 function genFunctionPreamble(ast, context) {
   const { push } = context
 
-  const VueBinging = 'vue'
-  const aliasHelper = s => `${helperMapName[s]} as _${helperMapName[s]}`
+  const VueBinging = 'Vue'
+  const aliasHelper = s => `${helperMapName[s]}: _${helperMapName[s]}`
 
   if (ast.helpers.length > 0) {
-    push(`import { ${ast.helpers.map(aliasHelper).join(', ')} } from "${VueBinging}"`) 
+    push(`const { ${ast.helpers.map(aliasHelper).join(', ')} } = ${VueBinging}`) 
   }
 
   push('\n')
   // let code = ''
   // code += 'export '
-  push('export ')
+  push('return ')
 }

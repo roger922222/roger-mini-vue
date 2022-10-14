@@ -1,21 +1,21 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`codegen element 1`] = `
-"import { createElementBlock as _createElementBlock } from "vue"
-export function render(_ctx, _cache, $props, $setup, $data, $options){return _createElementBlock('div')}"
+"const { createElementVNode: _createElementVNode } = Vue
+return function render(_ctx, _cache, $props, $setup, $data, $options){return _createElementVNode('div')}"
 `;
 
 exports[`codegen element-string-interpolation 1`] = `
-"import { toDisplayString as _toDisplayString, createElementBlock as _createElementBlock } from "vue"
-export function render(_ctx, _cache, $props, $setup, $data, $options){return _createElementBlock('div', null, 'hi,' + _toDisplayString(_ctx.message))}"
+"const { toDisplayString: _toDisplayString, createElementVNode: _createElementVNode } = Vue
+return function render(_ctx, _cache, $props, $setup, $data, $options){return _createElementVNode('div', null, 'hi,' + _toDisplayString(_ctx.message))}"
 `;
 
 exports[`codegen interpolation 1`] = `
-"import { toDisplayString as _toDisplayString } from "vue"
-export function render(_ctx, _cache, $props, $setup, $data, $options){return _toDisplayString(_ctx.message)}"
+"const { toDisplayString: _toDisplayString } = Vue
+return function render(_ctx, _cache, $props, $setup, $data, $options){return _toDisplayString(_ctx.message)}"
 `;
 
 exports[`codegen string 1`] = `
 "
-export function render(_ctx, _cache, $props, $setup, $data, $options){return 'hi'}"
+return function render(_ctx, _cache, $props, $setup, $data, $options){return 'hi'}"
 `;
