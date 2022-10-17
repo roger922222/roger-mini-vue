@@ -545,6 +545,7 @@ function createAppAPI(render) {
 }
 
 const queue = [];
+const activePreFlushCbs = [];
 let isFlushPending = false;
 const p = Promise.resolve();
 function nextTick(fn) {
@@ -563,9 +564,17 @@ function queueFlush() {
 }
 function flushJobs() {
     isFlushPending = false;
+    // 组件渲染前
+    flushPreFlusCbs();
+    // compoent render
     let job;
     while ((job = queue.shift())) {
         job && job();
+    }
+}
+function flushPreFlusCbs() {
+    for (let i = 0; i < activePreFlushCbs.length; i++) {
+        activePreFlushCbs[i]();
     }
 }
 
@@ -1007,7 +1016,8 @@ var runtimeDom = /*#__PURE__*/Object.freeze({
     isReactive: isReactive,
     isReadonly: isReadonly,
     isProxy: isProxy,
-    effect: effect
+    effect: effect,
+    ReactiveEffect: ReactiveEffect
 });
 
 const TO_DISPLAY_STRING = Symbol('toDisplayString');
@@ -1428,6 +1438,7 @@ function compilerToFunction(template) {
 }
 registerRuntimeCompiler(compilerToFunction);
 
+exports.ReactiveEffect = ReactiveEffect;
 exports.createApp = createApp;
 exports.createElementVNode = createVNode;
 exports.createRenderer = createRenderer;
